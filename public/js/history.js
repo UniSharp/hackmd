@@ -258,7 +258,7 @@ export function parseHistory (list, callback) {
 }
 
 export function parseServerToHistory (list, callback) {
-  $.get(`${serverurl}/history`)
+  $.get(`${serverurl}/history/everybody`)
         .done(data => {
           if (data.history) {
             parseToHistory(list, data.history, callback)
