@@ -33,7 +33,7 @@ import List from 'list.js'
 import S from 'string'
 
 const options = {
-  valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'tags', 'pinned'],
+  valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'marks', 'pinned'],
   item: '<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">' +
             '<span class="id" style="display:none;"></span>' +
             '<a href="#">' +
@@ -48,7 +48,7 @@ const options = {
                             '<i class="timestamp" style="display:none;"></i>' +
                             '<i class="time"></i>' +
                         '</p>' +
-                        '<p class="tags"></p>' +
+                        '<p class="marks"></p>' +
                     '</div>' +
                 '</div>' +
             '</a>' +
@@ -152,20 +152,20 @@ function parseHistoryCallback (list, notehistory) {
       }
     }
   })
-    // parse filter tags
-  const filtertags = []
+    // parse filter marks
+  const filtermarks = []
   for (let i = 0, l = list.items.length; i < l; i++) {
-    const tags = list.items[i]._values.tags
-    if (tags && tags.length > 0) {
-      for (let j = 0; j < tags.length; j++) {
-                // push info filtertags if not found
+    const marks = list.items[i]._values.marks
+    if (marks && marks.length > 0) {
+      for (let j = 0; j < marks.length; j++) {
+                // push info filtermarks if not found
         let found = false
-        if (filtertags.includes(tags[j])) { found = true }
-        if (!found) { filtertags.push(tags[j]) }
+        if (filtermarks.includes(marks[j])) { found = true }
+        if (!found) { filtermarks.push(marks[j]) }
       }
     }
   }
-  buildTagsFilter(filtertags)
+  buildMarksFilter(filtermarks)
 }
 
 // update items whenever list updated
@@ -177,7 +177,7 @@ historyList.on('updated', e => {
       const values = item._values
       const a = itemEl.find('a')
       const pin = itemEl.find('.ui-history-pin')
-      const tagsEl = itemEl.find('.tags')
+      const marksEl = itemEl.find('.marks')
             // parse link to element a
       a.attr('href', `${serverurl}/${values.id}`)
             // parse pinned
@@ -186,15 +186,15 @@ historyList.on('updated', e => {
       } else {
         pin.removeClass('active')
       }
-            // parse tags
-      const tags = values.tags
-      if (tags && tags.length > 0 && tagsEl.children().length <= 0) {
+            // parse marks
+      const marks = values.marks
+      if (marks && marks.length > 0 && marksEl.children().length <= 0) {
         const labels = []
-        for (let j = 0; j < tags.length; j++) {
+        for (let j = 0; j < marks.length; j++) {
                     // push into the item label
-          labels.push(`<span class='label label-default'>${tags[j]}</span>`)
+          labels.push(`<span class='label label-default'>${marks[j]}</span>`)
         }
-        tagsEl.html(labels.join(' '))
+        marksEl.html(labels.join(' '))
       }
     }
   }
@@ -349,8 +349,8 @@ $('.ui-clear-history').click(() => {
 })
 
 $('.ui-refresh-history').click(() => {
-  const lastTags = $('.ui-use-tags').select2('val')
-  $('.ui-use-tags').select2('val', '')
+  const lastMarks = $('.ui-use-marks').select2('val')
+  $('.ui-use-marks').select2('val', '')
   historyList.filter()
   const lastKeyword = $('.search').val()
   $('.search').val('')
@@ -362,8 +362,8 @@ $('.ui-refresh-history').click(() => {
   historyList.clear()
   parseHistory(historyList, (list, notehistory) => {
     parseHistoryCallback(list, notehistory)
-    $('.ui-use-tags').select2('val', lastTags)
-    $('.ui-use-tags').trigger('change')
+    $('.ui-use-marks').select2('val', lastMarks)
+    $('.ui-use-marks').trigger('change')
     historyList.search(lastKeyword)
     $('.search').val(lastKeyword)
     checkHistoryList()
@@ -376,39 +376,39 @@ $('.ui-logout').click(() => {
   location.href = `${serverurl}/logout`
 })
 
-let filtertags = []
-$('.ui-use-tags').select2({
-  placeholder: $('.ui-use-tags').attr('placeholder'),
+let filtermarks = []
+$('.ui-use-marks').select2({
+  placeholder: $('.ui-use-marks').attr('placeholder'),
   multiple: true,
   data () {
     return {
-      results: filtertags
+      results: filtermarks
     }
   }
 })
 $('.select2-input').css('width', 'inherit')
-buildTagsFilter([])
+buildMarksFilter([])
 
-function buildTagsFilter (tags) {
-  for (let i = 0; i < tags.length; i++) {
-    tags[i] = {
+function buildMarksFilter (marks) {
+  for (let i = 0; i < marks.length; i++) {
+    marks[i] = {
       id: i,
-      text: S(tags[i]).unescapeHTML().s
+      text: S(marks[i]).unescapeHTML().s
     }
   }
-  filtertags = tags
+  filtermarks = marks
 }
-$('.ui-use-tags').on('change', function () {
-  const tags = []
+$('.ui-use-marks').on('change', function () {
+  const marks = []
   const data = $(this).select2('data')
-  for (let i = 0; i < data.length; i++) { tags.push(data[i].text) }
-  if (tags.length > 0) {
+  for (let i = 0; i < data.length; i++) { marks.push(data[i].text) }
+  if (marks.length > 0) {
     historyList.filter(item => {
       const values = item.values()
-      if (!values.tags) return false
+      if (!values.marks) return false
       let found = false
-      for (let i = 0; i < tags.length; i++) {
-        if (values.tags.includes(tags[i])) {
+      for (let i = 0; i < marks.length; i++) {
+        if (values.marks.includes(marks[i])) {
           found = true
           break
         }

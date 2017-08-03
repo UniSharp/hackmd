@@ -253,10 +253,10 @@ input {
     display: table-cell;
     vertical-align: middle;
 }
-.list li .item .content .tags {
+.list li .item .content .marks {
     line-height: 25px;
 }
-.list li .item .content .tags span {
+.list li .item .content .marks span {
     display: inline-block;
     line-height: 15px;
 }
@@ -308,7 +308,7 @@ input {
 .ui-or {
     margin: 5px;
 }
-.ui-use-tags {
+.ui-use-marks {
     min-width: 172px;
     max-width: 344px;
 }
@@ -368,7 +368,7 @@ select {
     span.ui-or {
         display: block;
     }
-    .ui-use-tags {
+    .ui-use-marks {
         max-width: 100%;
     }
 }
